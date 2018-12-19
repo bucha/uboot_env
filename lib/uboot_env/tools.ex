@@ -1,5 +1,5 @@
-defmodule Nerves.Runtime.UBootEnv.Tools do
-  alias Nerves.Runtime.UBootEnv
+defmodule UBootEnv.Tools do
+  alias UBootEnv
 
   @moduledoc """
   This module uses U-boot tools' `fw_printenv` to read environment blocks.

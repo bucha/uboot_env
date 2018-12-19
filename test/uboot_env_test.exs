@@ -1,11 +1,10 @@
-defmodule Nerves.Runtime.UBootEnvTest do
+defmodule UBootEnvTest do
   use ExUnit.Case
-  doctest Nerves.Runtime.UBootEnv
-  doctest Nerves.Runtime.KV.UBootEnv
+  doctest UBootEnv
 
   @fixtures Path.expand("fixtures", __DIR__)
 
-  alias Nerves.Runtime.UBootEnv
+  alias UBootEnv
 
   test "parse kv" do
     kv_raw = """

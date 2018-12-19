@@ -1,6 +1,6 @@
-defmodule Nerves.Runtime.UBootEnv do
+defmodule UBootEnv do
   @moduledoc """
-  Nerves.Runtime.UBootEnv reads a non-replicated U-Boot environment block for
+  UBootEnv reads a non-replicated U-Boot environment block for
   storing firmware and provisioning information.
 
   The U-Boot environment format looks like this:
@@ -18,16 +18,18 @@ defmodule Nerves.Runtime.UBootEnv do
   newlines.
   """
 
-  alias Nerves.Runtime.UBootEnv.{Config, Tools}
+  alias UBootEnv.{Config, Tools}
 
   @doc """
   Read the UBoot environment into a map or key value pairs
   """
-  @spec read() ::
+  @spec read(Path.t() | nil) ::
           {:ok, map}
           | {:error, reason :: binary}
-  def read() do
-    with {:ok, {dev_name, dev_offset, env_size}} <- Config.read(),
+  def read(config_file \\ nil)
+
+  def read(file_or_nil) do
+    with {:ok, {dev_name, dev_offset, env_size}} <- do_config_read(file_or_nil),
          {:ok, kv} <- load(dev_name, dev_offset, env_size) do
       {:ok, kv}
     else
@@ -39,9 +41,11 @@ defmodule Nerves.Runtime.UBootEnv do
   @doc """
   Write a map of key value pairs to the UBoot environment
   """
-  @spec write(kv :: map) :: :ok | {:error, reason :: any}
-  def write(kv) do
-    with {:ok, {dev_name, dev_offset, env_size}} <- Config.read(),
+  @spec write(kv :: map, Path.t() | nil) :: :ok | {:error, reason :: any}
+  def write(kv, config_file \\ nil)
+
+  def write(kv, file_or_nil) do
+    with {:ok, {dev_name, dev_offset, env_size}} <- do_config_read(file_or_nil),
          {:ok, fd} <- File.open(dev_name, [:raw, :binary, :write]) do
       uboot_env = encode(kv, env_size)
       :ok = :file.pwrite(fd, dev_offset, uboot_env)
@@ -111,4 +115,7 @@ defmodule Nerves.Runtime.UBootEnv do
         error
     end
   end
+
+  defp do_config_read(nil), do: Config.read()
+  defp do_config_read(path), do: Config.read(path)
 end

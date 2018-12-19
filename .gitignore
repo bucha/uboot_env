@@ -20,8 +20,5 @@ erl_crash.dump
 *.ez
 
 # Ignore package tarball (built via "mix hex.build").
-nerves_runtime-*.tar
+uboot_env-*.tar
 
-# Ignore C build products
-src/*.o
-priv/
